@@ -8,10 +8,12 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   server: {
-    middlewareMode: true,
+    port: 5173,
+    host: true,
+    strictPort: false,
     fs: {
       strict: true,
-    },
+    }
   },
   base: '/',
 })
