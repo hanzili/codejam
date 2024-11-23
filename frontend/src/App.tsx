@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import ColorAnalysis from './pages/ColorAnalysis';
 import Recommendations from './pages/Recommendations';
-import History from './pages/History';
 
 const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const devAuthBypass = import.meta.env.VITE_DEV_AUTH_BYPASS === 'true';
@@ -55,14 +54,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Recommendations />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/history"
-              element={
-                <ProtectedRoute>
-                  <History />
                 </ProtectedRoute>
               }
             />

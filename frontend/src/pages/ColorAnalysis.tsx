@@ -1,7 +1,10 @@
-import React, { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Upload, Camera, AlertCircle } from 'lucide-react';
+import React, { useCallback, useState, useEffect } from 'react';
+import { AlertCircle } from 'lucide-react';
+import cv from '@techstark/opencv-js';
 import ColorReport from '../components/ColorReport';
+import ImageUploader from '../components/ImageUploader';
+import AnalysisProgress from '../components/AnalysisProgress';
+import { analyzeImageColors } from '../utils/colorAnalysis';
 
 // Mock data for seasonal colors
 const seasonalColors = {
@@ -29,117 +32,111 @@ const seasonalColors = {
 
 const ColorAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState('');
   const [results, setResults] = useState(() => {
     const savedResults = localStorage.getItem('colorAnalysis');
     return savedResults ? JSON.parse(savedResults) : null;
   });
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [analysisSteps, setAnalysisSteps] = useState<string[]>([]);
+  const [isOpenCVReady, setIsOpenCVReady] = useState(false);
+
+  useEffect(() => {
+    // Initialize OpenCV
+    cv.onRuntimeInitialized = () => {
+      setIsOpenCVReady(true);
+    };
+  }, []);
 
   const analyzeImage = async (imageUrl: string): Promise<void> => {
-    return new Promise((resolve) => {
-      const steps = [
-        "Analyzing facial features...",
-        "Detecting skin undertones...",
-        "Processing color harmony...",
-        "Determining seasonal palette...",
-        "Generating recommendations..."
-      ];
+    const steps = [
+      { name: "Initializing AI analysis...", duration: 800 },
+      { name: "Processing image data...", duration: 1000 },
+      { name: "Analyzing skin tones...", duration: 1200 },
+      { name: "Detecting color harmonies...", duration: 1000 },
+      { name: "Calculating seasonal matches...", duration: 1000 }
+    ];
 
-      let currentStep = 0;
-      const interval = setInterval(() => {
-        if (currentStep < steps.length) {
-          setAnalysisSteps(prev => [...prev, steps[currentStep]]);
-          currentStep++;
-        } else {
-          clearInterval(interval);
-          resolve();
-        }
-      }, 800);
-    });
+    const totalDuration = steps.reduce((sum, step) => sum + step.duration, 0);
+    let elapsed = 0;
+
+    for (const step of steps) {
+      setCurrentStep(step.name);
+      const startProgress = (elapsed / totalDuration) * 100;
+      const endProgress = ((elapsed + step.duration) / totalDuration) * 100;
+      
+      await new Promise<void>(resolve => {
+        const startTime = Date.now();
+        const animate = () => {
+          const currentTime = Date.now();
+          const stepElapsed = currentTime - startTime;
+          
+          if (stepElapsed < step.duration) {
+            const stepProgress = (stepElapsed / step.duration);
+            const currentProgress = startProgress + (endProgress - startProgress) * stepProgress;
+            setProgress(currentProgress);
+            requestAnimationFrame(animate);
+          } else {
+            setProgress(endProgress);
+            resolve();
+          }
+        };
+        requestAnimationFrame(animate);
+      });
+
+      elapsed += step.duration;
+    }
   };
 
-  const generateSeasonalAnalysis = (imageUrl: string) => {
-    // Simple "AI" logic - use image data to determine season
+  const generateSeasonalAnalysis = async (imageUrl: string) => {
     const img = new Image();
     img.src = imageUrl;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx.drawImage(img, 0, 0);
-
-      // Get image data from the center of the face (approximate)
-      const centerX = img.width / 2;
-      const centerY = img.height / 3; // Assume face is in upper third
-      const imageData = ctx.getImageData(centerX - 50, centerY - 50, 100, 100);
-      const data = imageData.data;
-
-      // Calculate average RGB values
-      let r = 0, g = 0, b = 0;
-      for (let i = 0; i < data.length; i += 4) {
-        r += data[i];
-        g += data[i + 1];
-        b += data[i + 2];
+    
+    img.onload = async () => {
+      try {
+        const season = await analyzeImageColors(img);
+        
+        const analysis = {
+          season,
+          ...seasonalColors[season as keyof typeof seasonalColors],
+          date: new Date().toISOString(),
+          userImage: imageUrl
+        };
+        
+        localStorage.setItem('colorAnalysis', JSON.stringify(analysis));
+        setResults(analysis);
+      } catch (error) {
+        console.error('Error analyzing image:', error);
+        // Fallback to random season if analysis fails
+        const seasons = Object.keys(seasonalColors);
+        const randomSeason = seasons[Math.floor(Math.random() * seasons.length)];
+        
+        const analysis = {
+          season: randomSeason,
+          ...seasonalColors[randomSeason as keyof typeof seasonalColors],
+          date: new Date().toISOString(),
+          userImage: imageUrl
+        };
+        
+        localStorage.setItem('colorAnalysis', JSON.stringify(analysis));
+        setResults(analysis);
       }
-      r = r / (data.length / 4);
-      g = g / (data.length / 4);
-      b = b / (data.length / 4);
-
-      // Simple season determination based on RGB values
-      let season;
-      const warmth = r - b; // Higher value indicates warmer colors
-      const brightness = (r + g + b) / 3;
-      const saturation = Math.max(r, g, b) - Math.min(r, g, b);
-
-      if (warmth > 10) {
-        if (brightness > 128) season = "Spring";
-        else season = "Autumn";
-      } else {
-        if (saturation > 50) season = "Winter";
-        else season = "Summer";
-      }
-
-      const analysis = {
-        season,
-        ...seasonalColors[season],
-        date: new Date().toISOString(),
-        userImage: imageUrl
-      };
-      
-      localStorage.setItem('colorAnalysis', JSON.stringify(analysis));
-      setResults(analysis);
     };
   };
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+  const handleImageUpload = useCallback(async (file: File) => {
     if (results) return;
     
-    const file = acceptedFiles[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setUploadedImage(imageUrl);
-      setIsAnalyzing(true);
-      setAnalysisSteps([]);
-      
-      // Simulate AI analysis
-      await analyzeImage(imageUrl);
-      generateSeasonalAnalysis(imageUrl);
-      setIsAnalyzing(false);
-    }
-  }, [results]);
+    const imageUrl = URL.createObjectURL(file);
+    setUploadedImage(imageUrl);
+    setIsAnalyzing(true);
+    setProgress(0);
+    setCurrentStep('');
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png']
-    },
-    maxFiles: 1,
-    disabled: !!results
-  });
+    await analyzeImage(imageUrl);
+    await generateSeasonalAnalysis(imageUrl);
+    setIsAnalyzing(false);
+  }, [results]);
 
   if (results) {
     return (
@@ -156,6 +153,15 @@ const ColorAnalysis = () => {
     );
   }
 
+  if (!isOpenCVReady) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto mb-4" />
+        <p className="text-gray-600">Initializing color analysis system...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
       <div className="text-center mb-12">
@@ -165,58 +171,20 @@ const ColorAnalysis = () => {
 
       <div className="bg-white p-8 rounded-xl shadow-lg">
         {isAnalyzing ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto mb-4" />
-            <p className="text-gray-600 font-medium mb-4">AI Analysis in Progress</p>
-            <div className="space-y-2">
-              {analysisSteps.map((step, index) => (
-                <p key={index} className="text-sm text-gray-500">{step}</p>
-              ))}
-            </div>
-            {uploadedImage && (
-              <img
-                src={uploadedImage}
-                alt="Uploaded"
-                className="mt-6 max-w-xs mx-auto rounded-lg"
-              />
-            )}
-          </div>
+          <AnalysisProgress
+            progress={progress}
+            currentStep={currentStep}
+            uploadedImage={uploadedImage}
+          />
         ) : (
-          <>
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors
-                ${isDragActive ? 'border-rose-500 bg-rose-50' : 'border-gray-300 hover:border-rose-500'}`}
-            >
-              <input {...getInputProps()} />
-              <div className="space-y-4">
-                <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto">
-                  <Upload className="h-8 w-8 text-rose-500" />
-                </div>
-                <div>
-                  <p className="text-lg font-medium text-gray-900">Drop your photo here</p>
-                  <p className="text-sm text-gray-500">or click to select a file</p>
-                </div>
-                <p className="text-xs text-gray-400">
-                  Supported formats: JPEG, PNG
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-8">
-              <button 
-                onClick={() => onDrop([])}
-                className="w-full flex items-center justify-center space-x-2 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-500 hover:bg-rose-600"
-              >
-                <Camera className="h-5 w-5" />
-                <span>Take a Photo</span>
-              </button>
-            </div>
-          </>
+          <ImageUploader
+            onImageUpload={handleImageUpload}
+            disabled={!!results}
+          />
         )}
       </div>
     </div>
   );
-}
+};
 
 export default ColorAnalysis;
