@@ -7,4 +7,11 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  server: {
+    middlewareMode: true,
+    fs: {
+      strict: true,
+    },
+  },
+  base: '/',
 })
