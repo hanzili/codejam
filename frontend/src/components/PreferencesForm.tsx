@@ -1,48 +1,61 @@
 import React from 'react';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, Palette } from 'lucide-react';
 
 interface PreferencesFormProps {
   preferences: {
     occasion: string;
     style: string;
-    priceRange: string;
+    season: string;
     useSeasonalColors: boolean;
   };
   onChange: (preferences: any) => void;
   onSubmit: () => void;
+  userSeason?: string;
 }
 
 const PreferencesForm: React.FC<PreferencesFormProps> = ({
   preferences,
   onChange,
-  onSubmit
+  onSubmit,
+  userSeason
 }) => {
   const occasions = [
     { id: 'formal', label: 'Formal', icon: '👔' },
     { id: 'casual', label: 'Casual', icon: '🌅' },
-    { id: 'business', label: 'Business', icon: '💼' },
     { id: 'party', label: 'Party', icon: '🎉' }
   ];
 
   const styles = [
-    { id: 'classic', label: 'Classic', icon: '✨' },
     { id: 'modern', label: 'Modern', icon: '🎯' },
     { id: 'creative', label: 'Creative', icon: '🎨' }
   ];
 
-  const priceRanges = [
-    { id: 'budget', label: 'Budget ($)', range: '100-300' },
-    { id: 'moderate', label: 'Moderate ($$)', range: '300-700' },
-    { id: 'premium', label: 'Premium ($$$)', range: '700+' }
+  const seasons = [
+    { id: 'spring', label: 'Spring' },
+    { id: 'summer', label: 'Summer' },
+    { id: 'autumn', label: 'Autumn' },
+    { id: 'winter', label: 'Winter' }
   ];
 
-  const isComplete = preferences.occasion && preferences.style && preferences.priceRange;
+  const isComplete = preferences.occasion && preferences.style && preferences.season;
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 space-y-8">
+      {userSeason && (
+        <div className="bg-rose-50 p-4 rounded-lg">
+          <div className="flex items-center gap-2 text-rose-700 mb-2">
+            <Palette className="h-5 w-5" />
+            <span className="font-medium">Your Color Analysis</span>
+          </div>
+          <p className="text-sm text-rose-600">
+            Based on your color analysis, you are a {userSeason} type.
+          </p>
+        </div>
+      )}
+
       <div>
         <h3 className="text-lg font-medium text-gray-900 mb-4">What's the occasion?</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           {occasions.map(({ id, label, icon }) => (
             <button
               key={id}
@@ -62,7 +75,7 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({
 
       <div>
         <h3 className="text-lg font-medium text-gray-900 mb-4">Preferred style</h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           {styles.map(({ id, label, icon }) => (
             <button
               key={id}
@@ -81,20 +94,22 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Price range</h3>
-        <div className="grid grid-cols-3 gap-4">
-          {priceRanges.map(({ id, label, range }) => (
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Season Colors</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {seasons.map(({ id, label }) => (
             <button
               key={id}
-              onClick={() => onChange({ ...preferences, priceRange: id })}
+              onClick={() => onChange({ ...preferences, season: id })}
               className={`p-4 rounded-lg border-2 transition-colors ${
-                preferences.priceRange === id
+                preferences.season === id
                   ? 'border-rose-500 bg-rose-50'
                   : 'border-gray-200 hover:border-rose-200'
               }`}
             >
-              <span className="font-medium">{label}</span>
-              <span className="text-sm text-gray-500 block">${range}</span>
+              <span className="text-sm font-medium">{label}</span>
+              {userSeason?.toLowerCase() === id && (
+                <span className="text-xs text-rose-500 block mt-1">(Your Season)</span>
+              )}
             </button>
           ))}
         </div>

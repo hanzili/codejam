@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, Heart, Share2 } from 'lucide-react';
+import { ShoppingBag, Heart, Share2, Palette, ExternalLink, Tag, Info } from 'lucide-react';
 
 interface OutfitItem {
   type: string;
@@ -8,6 +8,8 @@ interface OutfitItem {
   price: number;
   image: string;
   color: string;
+  description: string;
+  link: string;
 }
 
 interface OutfitSetProps {
@@ -15,7 +17,6 @@ interface OutfitSetProps {
   occasion: string;
   items: OutfitItem[];
   totalPrice: number;
-  seasonalColors?: boolean;
   season?: string;
   style?: string;
 }
@@ -25,7 +26,6 @@ const OutfitSet: React.FC<OutfitSetProps> = ({
   occasion, 
   items, 
   totalPrice,
-  seasonalColors,
   season,
   style 
 }) => {
@@ -44,31 +44,57 @@ const OutfitSet: React.FC<OutfitSetProps> = ({
                   {style}
                 </span>
               )}
-              {seasonalColors && season && (
-                <span className="inline-block px-3 py-1 bg-green-50 text-green-500 rounded-full text-sm">
+              {season && (
+                <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-500 rounded-full text-sm">
+                  <Palette className="h-4 w-4" />
                   {season} Colors
                 </span>
               )}
             </div>
           </div>
-          <span className="text-lg font-semibold text-rose-500">${totalPrice}</span>
+          <span className="text-lg font-semibold text-rose-500">${totalPrice.toFixed(2)}</span>
         </div>
 
         <div className="space-y-4">
           {items.map((item, index) => (
             <div key={index} className="group">
-              <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg group-hover:bg-gray-100 transition-colors">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-16 h-16 object-cover rounded-md"
-                />
-                <div className="flex-1">
-                  <p className="font-medium text-gray-900">{item.type}</p>
-                  <p className="text-sm text-gray-600">{item.brand}</p>
-                  <p className="text-sm text-gray-500">{item.color}</p>
+              <div className="bg-gray-50 rounded-lg overflow-hidden">
+                <div className="flex items-center space-x-4 p-4">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-24 h-24 object-cover rounded-md"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">
+                        <Tag className="h-3 w-3 mr-1" />
+                        {item.type}
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-medium text-gray-900 truncate">{item.name}</h4>
+                    <p className="text-sm text-gray-600">{item.brand}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="inline-flex items-center text-sm text-gray-500">
+                        <Info className="h-4 w-4 mr-1" />
+                        {item.color}
+                      </span>
+                      <span className="text-sm font-medium text-rose-500">${item.price.toFixed(2)}</span>
+                    </div>
+                  </div>
                 </div>
-                <span className="font-medium text-gray-900">${item.price}</span>
+                <div className="border-t border-gray-100 bg-gray-50 p-4">
+                  <p className="text-sm text-gray-600 mb-3">{item.description}</p>
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-sm text-rose-500 hover:text-rose-600"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-1" />
+                    View Product
+                  </a>
+                </div>
               </div>
             </div>
           ))}

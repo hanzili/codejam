@@ -1,58 +1,44 @@
-import { outfitItems, outfitRules, priceRanges } from '../config/outfitData';
+import { outfitItems, outfitRules } from '../config/outfitData';
 
 interface OutfitPreferences {
   occasion: string;
   style: string;
-  priceRange: string;
   season?: string;
 }
 
 export function generateOutfit(preferences: OutfitPreferences) {
-  const { occasion, style, priceRange, season } = preferences;
+  const { occasion, style, season } = preferences;
   
   // Try to get items for the specific combination
-  let availableItems = outfitItems[occasion]?.[style]?.[priceRange]?.[season?.toLowerCase() || 'spring'];
+  let availableItems = outfitItems[occasion]?.[style]?.[season?.toLowerCase() || 'spring'];
   
   // If no items found with season, try without season
-  if (!availableItems || availableItems.length === 0) {
-    availableItems = outfitItems[occasion]?.[style]?.[priceRange]?.spring;
+  if (!availableItems) {
+    availableItems = outfitItems[occasion]?.[style]?.spring;
   }
   
   // If still no items, try with different style but same occasion
-  if (!availableItems || availableItems.length === 0) {
+  if (!availableItems) {
     const styles = Object.keys(outfitItems[occasion] || {});
     for (const altStyle of styles) {
-      availableItems = outfitItems[occasion]?.[altStyle]?.[priceRange]?.spring;
-      if (availableItems && availableItems.length > 0) break;
+      availableItems = outfitItems[occasion]?.[altStyle]?.spring;
+      if (availableItems) break;
     }
   }
   
-  // If still no items, try with different price range
-  if (!availableItems || availableItems.length === 0) {
-    const priceRanges = ['budget', 'moderate', 'premium'];
-    for (const altPrice of priceRanges) {
-      if (altPrice === priceRange) continue;
-      availableItems = outfitItems[occasion]?.[style]?.[altPrice]?.spring;
-      if (availableItems && availableItems.length > 0) break;
-    }
-  }
-  
-  if (!availableItems || availableItems.length === 0) {
-    console.log('No items found for:', { occasion, style, priceRange, season });
+  if (!availableItems) {
+    console.log('No items found for:', { occasion, style, season });
     return null;
   }
   
   // Get style rules for the season
   const rules = season ? outfitRules[season.toLowerCase()] : outfitRules.spring;
   
-  // Calculate total budget
-  const budget = priceRanges[priceRange];
-  
-  // Generate outfit within budget and following rules
-  const selectedItems = selectItemsWithinBudget(availableItems, budget);
+  // Select items following rules
+  const selectedItems = selectItems(availableItems.top, availableItems.bottom, rules);
   
   if (selectedItems.length === 0) {
-    console.log('No items within budget for:', { occasion, style, priceRange, budget });
+    console.log('No suitable items found for:', { occasion, style });
     return null;
   }
   
@@ -76,44 +62,20 @@ function generateOutfitTitle(occasion: string, style: string, season?: string) {
   return `${styleText}${seasonText} ${occasionText} Ensemble`;
 }
 
-function selectItemsWithinBudget(items: any[], budget: { min: number; max: number }) {
-  let remainingBudget = budget.max;
+function selectItems(topItems: any[], bottomItems: any[], rules: any) {
   const selectedItems = [];
   
-  // Essential items first (in order of importance)
-  const essentialTypes = ['Suit', 'Blazer', 'Jacket', 'Shirt', 'T-Shirt', 'Pants'];
-  
-  // Select one item from each essential type
-  for (const type of essentialTypes) {
-    const availableItems = items.filter(i => i.type === type && i.price <= remainingBudget);
-    if (availableItems.length > 0) {
-      // Select random item from available ones
-      const selectedItem = availableItems[Math.floor(Math.random() * availableItems.length)];
-      selectedItems.push(selectedItem);
-      remainingBudget -= selectedItem.price;
-    }
+  // Select one top item
+  if (topItems && topItems.length > 0) {
+    const randomTop = topItems[Math.floor(Math.random() * topItems.length)];
+    selectedItems.push(randomTop);
   }
   
-  // Add accessories if budget allows
-  const accessories = items.filter(i => 
-    !essentialTypes.includes(i.type) && 
-    i.price <= remainingBudget &&
-    !selectedItems.find(selected => selected.type === i.type)
-  );
-  
-  // Randomly select accessories within budget
-  while (accessories.length > 0 && remainingBudget > 0) {
-    const randomIndex = Math.floor(Math.random() * accessories.length);
-    const accessory = accessories[randomIndex];
-    
-    if (accessory.price <= remainingBudget) {
-      selectedItems.push(accessory);
-      remainingBudget -= accessory.price;
-    }
-    
-    accessories.splice(randomIndex, 1);
+  // Select one bottom item
+  if (bottomItems && bottomItems.length > 0) {
+    const randomBottom = bottomItems[Math.floor(Math.random() * bottomItems.length)];
+    selectedItems.push(randomBottom);
   }
   
-  // Return items if we have at least 2 pieces
-  return selectedItems.length >= 2 ? selectedItems : [];
+  return selectedItems;
 }
