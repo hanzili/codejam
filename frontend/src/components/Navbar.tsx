@@ -45,7 +45,7 @@ const Navbar = () => {
               } transition-colors`}
             >
               <Sparkles className="h-8 w-8" />
-              <span className="text-xl font-semibold">StyleSage</span>
+              <span className="text-xl font-semibold">SeasonOfYou</span>
             </Link>
           </div>
           <div className="flex items-center space-x-4">
