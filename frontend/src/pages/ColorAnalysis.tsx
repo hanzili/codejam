@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
-import cv from '@techstark/opencv-js';
 import ColorReport from '../components/ColorReport';
 import ImageUploader from '../components/ImageUploader';
 import AnalysisProgress from '../components/AnalysisProgress';
@@ -34,19 +33,8 @@ const ColorAnalysis = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState('');
-  const [results, setResults] = useState(() => {
-    const savedResults = localStorage.getItem('colorAnalysis');
-    return savedResults ? JSON.parse(savedResults) : null;
-  });
+  const [results, setResults] = useState(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [isOpenCVReady, setIsOpenCVReady] = useState(false);
-
-  useEffect(() => {
-    // Initialize OpenCV
-    cv.onRuntimeInitialized = () => {
-      setIsOpenCVReady(true);
-    };
-  }, []);
 
   const analyzeImage = async (imageUrl: string): Promise<void> => {
     const steps = [
@@ -65,27 +53,19 @@ const ColorAnalysis = () => {
       const startProgress = (elapsed / totalDuration) * 100;
       const endProgress = ((elapsed + step.duration) / totalDuration) * 100;
       
-      await new Promise<void>(resolve => {
-        const startTime = Date.now();
-        const animate = () => {
-          const currentTime = Date.now();
-          const stepElapsed = currentTime - startTime;
-          
-          if (stepElapsed < step.duration) {
-            const stepProgress = (stepElapsed / step.duration);
-            const currentProgress = startProgress + (endProgress - startProgress) * stepProgress;
-            setProgress(currentProgress);
-            requestAnimationFrame(animate);
-          } else {
-            setProgress(endProgress);
-            resolve();
-          }
-        };
-        requestAnimationFrame(animate);
-      });
+      const startTime = Date.now();
+      while (Date.now() - startTime < step.duration) {
+        const stepElapsed = Date.now() - startTime;
+        const stepProgress = Math.min(stepElapsed / step.duration, 1);
+        const currentProgress = startProgress + (endProgress - startProgress) * stepProgress;
+        setProgress(Math.min(currentProgress, 100));
+        await new Promise(resolve => setTimeout(resolve, 16)); // ~60fps
+      }
 
       elapsed += step.duration;
     }
+
+    setProgress(100);
   };
 
   const generateSeasonalAnalysis = async (imageUrl: string) => {
@@ -138,6 +118,12 @@ const ColorAnalysis = () => {
     setIsAnalyzing(false);
   }, [results]);
 
+  const resetAnalysis = () => {
+    localStorage.removeItem('colorAnalysis');
+    setResults(null);
+    setUploadedImage(null);
+  };
+
   if (results) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
@@ -149,15 +135,6 @@ const ColorAnalysis = () => {
           </div>
         </div>
         <ColorReport {...results} />
-      </div>
-    );
-  }
-
-  if (!isOpenCVReady) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500 mx-auto mb-4" />
-        <p className="text-gray-600">Initializing color analysis system...</p>
       </div>
     );
   }

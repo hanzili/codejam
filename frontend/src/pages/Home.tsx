@@ -103,10 +103,10 @@ const Home = () => {
             </SignedOut>
             <SignedIn>
               <Link
-                to="/dashboard"
+                to="/color-analysis"
                 className="inline-block bg-rose-500 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
-                Go to Dashboard
+                See my style
               </Link>
             </SignedIn>
           </motion.div>
