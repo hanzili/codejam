@@ -1,30 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateOutfit } from '../utils/outfitGenerator';
 import OutfitSet from './OutfitSet';
 import PreferencesForm from './PreferencesForm';
 
 const OutfitGenerator = () => {
+  const [colorAnalysis, setColorAnalysis] = useState<any>(null);
   const [preferences, setPreferences] = useState({
     occasion: '',
     style: '',
-    priceRange: '',
+    season: '',
     useSeasonalColors: true
   });
   const [outfit, setOutfit] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [noOutfitsFound, setNoOutfitsFound] = useState(false);
 
+  useEffect(() => {
+    const analysis = JSON.parse(localStorage.getItem('colorAnalysis') || '{}');
+    setColorAnalysis(analysis);
+    if (analysis.season) {
+      setPreferences(prev => ({
+        ...prev,
+        season: analysis.season.toLowerCase()
+      }));
+    }
+  }, []);
+
   const handleGenerate = async () => {
     setIsGenerating(true);
     setNoOutfitsFound(false);
     
-    // Get color analysis from localStorage
-    const colorAnalysis = JSON.parse(localStorage.getItem('colorAnalysis') || '{}');
-    
-    // Generate outfit
+    // Generate outfit with seasonal preferences
     const newOutfit = generateOutfit({
       ...preferences,
-      season: preferences.useSeasonalColors ? colorAnalysis.season?.toLowerCase() : undefined
+      season: preferences.season
     });
 
     // Simulate API delay
@@ -54,6 +63,7 @@ const OutfitGenerator = () => {
           preferences={preferences}
           onChange={setPreferences}
           onSubmit={handleGenerate}
+          userSeason={colorAnalysis?.season}
         />
       ) : (
         <div className="space-y-8">

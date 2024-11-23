@@ -7,13 +7,13 @@ import {
   Camera, 
   Palette, 
   Sparkles, 
-  Zap,
-  ShoppingCart,
-  Crown,
+  Wand2,
+  ShoppingBag,
+  Heart,
   Gem,
   Shapes,
-  Scissors,
-  Target
+  Shirt,
+  Sun
 } from 'lucide-react';
 
 const fadeInUp = {
@@ -43,26 +43,26 @@ const Home = () => {
   const journeySteps = [
     {
       icon: <Camera className="h-8 w-8" />,
-      title: "Take a Photo",
-      description: "Upload a selfie for color analysis",
+      title: "Take a Selfie",
+      description: "Get your personal color analysis",
       color: "from-pink-500 to-rose-500"
     },
     {
       icon: <Palette className="h-8 w-8" />,
-      title: "Get Your Colors",
-      description: "Discover your seasonal color palette",
+      title: "Discover Your Season",
+      description: "Learn your perfect color palette",
       color: "from-purple-500 to-indigo-500"
     },
     {
-      icon: <Zap className="h-8 w-8" />,
-      title: "AI Styling",
-      description: "Receive personalized outfit suggestions",
+      icon: <Wand2 className="h-8 w-8" />,
+      title: "Smart Styling",
+      description: "Get personalized outfit recommendations",
       color: "from-blue-500 to-cyan-500"
     },
     {
-      icon: <ShoppingCart className="h-8 w-8" />,
+      icon: <ShoppingBag className="h-8 w-8" />,
       title: "Shop Confidently",
-      description: "Buy pieces that work perfectly together",
+      description: "Find pieces that match your colors",
       color: "from-teal-500 to-emerald-500"
     }
   ];
@@ -83,21 +83,21 @@ const Home = () => {
             className="text-5xl md:text-7xl font-bold text-gray-900 mb-8"
           >
             Your Personal
-            <span className="bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent"> Style AI</span>
+            <span className="bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent"> Color Guide</span>
           </motion.h1>
           
           <motion.p 
             variants={fadeInUp}
             className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed"
           >
-            Get personalized outfit recommendations that match your style, body type, and seasonal colors. Perfect for any occasion and budget.
+            Discover your seasonal color palette and get personalized outfit recommendations that enhance your natural beauty.
           </motion.p>
           
           <motion.div variants={fadeInUp}>
             <SignedOut>
               <SignUpButton mode="modal">
                 <button className="inline-block bg-rose-500 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                  Start Your Style Journey
+                  Start Your Color Journey
                 </button>
               </SignUpButton>
             </SignedOut>
@@ -106,7 +106,7 @@ const Home = () => {
                 to="/color-analysis"
                 className="inline-block bg-rose-500 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
-                See my style
+                Discover Your Colors
               </Link>
             </SignedIn>
           </motion.div>
@@ -124,10 +124,10 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div variants={fadeInUp} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Your Style Journey
+              Your Color Journey
             </h2>
             <p className="text-xl text-gray-600">
-              Four simple steps to your perfect wardrobe
+              Four steps to your perfect wardrobe
             </p>
           </motion.div>
 
@@ -178,12 +178,12 @@ const Home = () => {
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             {[
-              { icon: <Crown />, title: "Expert Curation", description: "AI-powered recommendations based on fashion expertise" },
-              { icon: <Gem />, title: "Quality Focus", description: "Carefully selected pieces that last" },
-              { icon: <Shapes />, title: "Body Positivity", description: "Styles that celebrate every body type" },
-              { icon: <Scissors />, title: "Custom Fit", description: "Recommendations based on your measurements" },
-              { icon: <Target />, title: "Budget Friendly", description: "Options for every price point" },
-              { icon: <Sparkles />, title: "Trend Aware", description: "Stay stylish with current fashion trends" }
+              { icon: <Palette />, title: "Color Analysis", description: "Get your personalized seasonal color palette" },
+              { icon: <Shirt />, title: "Smart Wardrobe", description: "Curated outfits that complement your colors" },
+              { icon: <Sun />, title: "Seasonal Updates", description: "Stay stylish with seasonal recommendations" },
+              { icon: <Heart />, title: "Personal Style", description: "Outfits tailored to your preferences" },
+              { icon: <Shapes />, title: "Mix & Match", description: "Create endless combinations with your colors" },
+              { icon: <Sparkles />, title: "Enhanced Beauty", description: "Colors that make you naturally glow" }
             ].map((benefit, index) => (
               <motion.div
                 key={index}
