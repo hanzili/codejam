@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { generateOutfit } from '../utils/outfitGenerator';
+import { useSupabaseUser } from '../hooks/useSupabase';
+import { saveOutfit } from '../lib/supabase';
 import OutfitSet from './OutfitSet';
 import PreferencesForm from './PreferencesForm';
 
 const OutfitGenerator = () => {
-  const [colorAnalysis, setColorAnalysis] = useState<any>(null);
+  const { user } = useSupabaseUser();
   const [preferences, setPreferences] = useState({
     occasion: '',
     style: '',
@@ -16,17 +18,17 @@ const OutfitGenerator = () => {
   const [noOutfitsFound, setNoOutfitsFound] = useState(false);
 
   useEffect(() => {
-    const analysis = JSON.parse(localStorage.getItem('colorAnalysis') || '{}');
-    setColorAnalysis(analysis);
-    if (analysis.season) {
+    if (user?.season) {
       setPreferences(prev => ({
         ...prev,
-        season: analysis.season.toLowerCase()
+        season: user.season.toLowerCase()
       }));
     }
-  }, []);
+  }, [user]);
 
   const handleGenerate = async () => {
+    if (!user) return;
+
     setIsGenerating(true);
     setNoOutfitsFound(false);
     
@@ -36,19 +38,20 @@ const OutfitGenerator = () => {
       season: preferences.season
     });
 
+    // Save outfit selection to Supabase
+    if (newOutfit) {
+      await saveOutfit(user.id, {
+        user_id: user.id,
+        occasion: preferences.occasion,
+        style: preferences.style,
+        season: preferences.season
+      });
+    }
+
     // Simulate API delay
     setTimeout(() => {
       if (newOutfit && newOutfit.items.length > 0) {
         setOutfit(newOutfit);
-        
-        // Save to history
-        const history = JSON.parse(localStorage.getItem('outfitHistory') || '[]');
-        history.unshift({
-          date: new Date().toISOString(),
-          preferences,
-          outfit: newOutfit
-        });
-        localStorage.setItem('outfitHistory', JSON.stringify(history));
       } else {
         setNoOutfitsFound(true);
       }
@@ -63,7 +66,7 @@ const OutfitGenerator = () => {
           preferences={preferences}
           onChange={setPreferences}
           onSubmit={handleGenerate}
-          userSeason={colorAnalysis?.season}
+          userSeason={user?.season}
         />
       ) : (
         <div className="space-y-8">

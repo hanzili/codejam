@@ -1,60 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Clock, ArrowRight } from 'lucide-react';
+import { useSupabaseUser } from '../hooks/useSupabase';
+import { getUserOutfits, type Outfit } from '../lib/supabase';
 import OutfitSet from '../components/OutfitSet';
+import { generateOutfit } from '../utils/outfitGenerator';
 
 const History = () => {
-  // Mock data for demonstration
-  const outfitHistory = [
-    {
-      date: "2024-03-16",
-      preferences: {
-        occasion: "Business Meeting",
-        style: "Classic & Timeless",
-        priceRange: "Moderate ($$)",
-        useSeasonalColors: true
-      },
-      outfit: {
-        id: 1,
-        title: "Classic Business Ensemble",
-        occasion: "Work",
-        totalPrice: 850,
-        items: [
-          {
-            type: "Blazer",
-            name: "Classic Fitted Blazer",
-            brand: "Theory",
-            price: 425,
-            image: "https://images.unsplash.com/photo-1591085686350-798c0f9faa7f",
-            color: "Navy"
-          },
-          {
-            type: "Blouse",
-            name: "Silk Button-Up",
-            brand: "Equipment",
-            price: 220,
-            image: "https://images.unsplash.com/photo-1598554747436-c9293d6a588f",
-            color: "White"
-          },
-          {
-            type: "Pants",
-            name: "Tailored Trousers",
-            brand: "Hugo Boss",
-            price: 295,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy"
-          },
-          {
-            type: "Accessories",
-            name: "Leather Pumps",
-            brand: "Stuart Weitzman",
-            price: 375,
-            image: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2",
-            color: "Black"
-          }
-        ]
+  const { user } = useSupabaseUser();
+  const [outfits, setOutfits] = useState<Outfit[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadOutfits() {
+      if (!user) return;
+
+      try {
+        const userOutfits = await getUserOutfits(user.id);
+        setOutfits(userOutfits);
+      } catch (error) {
+        console.error('Error loading outfits:', error);
+      } finally {
+        setLoading(false);
       }
     }
-  ];
+
+    loadOutfits();
+  }, [user]);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-rose-500" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -72,45 +53,50 @@ const History = () => {
         </button>
       </div>
 
-      {outfitHistory.length > 0 ? (
+      {outfits.length > 0 ? (
         <div className="space-y-8">
-          {outfitHistory.map((record, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="p-6">
-                <div className="flex items-center text-gray-600 mb-4">
-                  <Clock className="h-5 w-5 mr-2" />
-                  <span>{new Date(record.date).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}</span>
-                </div>
+          {outfits.map((record) => {
+            // Regenerate the outfit based on stored preferences
+            const generatedOutfit = generateOutfit({
+              occasion: record.occasion,
+              style: record.style,
+              season: record.season
+            });
 
-                <div className="grid md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg mb-6">
-                  <div>
-                    <span className="font-medium">Occasion:</span>
-                    <span className="ml-2 text-gray-600">{record.preferences.occasion}</span>
+            if (!generatedOutfit) return null;
+
+            return (
+              <div key={record.id} className="bg-white rounded-xl shadow-md overflow-hidden">
+                <div className="p-6">
+                  <div className="flex items-center text-gray-600 mb-4">
+                    <Clock className="h-5 w-5 mr-2" />
+                    <span>{new Date(record.created_at).toLocaleDateString('en-US', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}</span>
                   </div>
-                  <div>
-                    <span className="font-medium">Style:</span>
-                    <span className="ml-2 text-gray-600">{record.preferences.style}</span>
+
+                  <div className="grid md:grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded-lg mb-6">
+                    <div>
+                      <span className="font-medium">Occasion:</span>
+                      <span className="ml-2 text-gray-600 capitalize">{record.occasion}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Style:</span>
+                      <span className="ml-2 text-gray-600 capitalize">{record.style}</span>
+                    </div>
+                    <div>
+                      <span className="font-medium">Season:</span>
+                      <span className="ml-2 text-gray-600 capitalize">{record.season}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-medium">Price Range:</span>
-                    <span className="ml-2 text-gray-600">{record.preferences.priceRange}</span>
-                  </div>
-                  <div>
-                    <span className="font-medium">Used Seasonal Colors:</span>
-                    <span className="ml-2 text-gray-600">
-                      {record.preferences.useSeasonalColors ? 'Yes' : 'No'}
-                    </span>
-                  </div>
+                  
+                  <OutfitSet {...generatedOutfit} />
                 </div>
-                
-                <OutfitSet {...record.outfit} />
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-16 bg-white rounded-xl shadow-md">

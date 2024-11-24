@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/clerk-react';
 
-const devAuthBypass = import.meta.env.VITE_DEV_AUTH_BYPASS === 'true';
+const devAuthBypass = import.meta.env.VITE_DEV_AUTH_BYPASS;
 
 const Navbar = () => {
   const location = useLocation();

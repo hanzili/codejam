@@ -1,11 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 import ColorReport from '../components/ColorReport';
 import ImageUploader from '../components/ImageUploader';
 import AnalysisProgress from '../components/AnalysisProgress';
 import OpenAI from 'openai';
+import { useSupabaseUser } from '../hooks/useSupabase';
+import { updateUserSeason } from '../lib/supabase';
 
 const key = import.meta.env.VITE_OPENAI_KEY;
+const useOpenAI = import.meta.env.VITE_USE_OPENAI === 'true';
 
 // Seasonal colors data
 const seasonalColors = {
@@ -36,36 +39,70 @@ const seasonalColors = {
 };
 
 const ColorAnalysis = () => {
+  const { user, loading } = useSupabaseUser();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState('');
   const [results, setResults] = useState<any>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
-  const handleImageUpload = useCallback(async (file: File) => {
-    const imageUrl = URL.createObjectURL(file);
-    setUploadedImage(imageUrl);
-    setIsAnalyzing(true);
-    setProgress(0);
-    setCurrentStep('Starting analysis...');
+  // State to manage whether to show the report or the uploader
+  const [showReport, setShowReport] = useState(false);
 
-    // Start progress simulation
-    simulateProgress();
+  // Check if user has a saved season when the component mounts or when the user changes
+  useEffect(() => {
+    if (user && user.season && !results && !isAnalyzing) {
+      // Generate analysis based on user's saved season
+      const analysis = generateSeasonalAnalysis(user.season);
+      setResults(analysis);
+      setShowReport(true);
+    }
+  }, [user]);
 
-    // Convert image to base64
-    const base64Image = await convertToBase64(file);
+  const handleImageUpload = useCallback(
+    async (file: File) => {
+      const imageUrl = URL.createObjectURL(file);
+      setUploadedImage(imageUrl);
+      setIsAnalyzing(true);
+      setProgress(0);
+      setCurrentStep('Starting analysis...');
 
-    // Send image to OpenAI
-    const season = await sendImageToOpenAI(base64Image);
+      // Start progress simulation
+      simulateProgress();
 
-    // Generate analysis results
-    const analysis = generateSeasonalAnalysis(season);
-    setResults(analysis);
+      // Convert image to base64
+      const base64Image = await convertToBase64(file);
 
-    setIsAnalyzing(false);
-    setProgress(100);
-    setCurrentStep('Analysis complete');
-  }, []);
+      // Determine season based on OpenAI flag
+      const season = useOpenAI ? await sendImageToOpenAI(base64Image) : getRandomSeason();
+
+      // Generate analysis results
+      const analysis = generateSeasonalAnalysis(season);
+      setResults(analysis);
+
+      // Update user's season in Supabase if user is logged in
+      if (user) {
+        try {
+          await updateUserSeason(user.id, season);
+        } catch (error) {
+          console.error('Error updating user season:', error);
+        }
+      }
+
+      setIsAnalyzing(false);
+      setProgress(100);
+      setCurrentStep('Analysis complete');
+      setShowReport(true);
+    },
+    [user]
+  );
+
+  const handleRedoAnalysis = () => {
+    // Reset the state to allow the user to upload a new image
+    setResults(null);
+    setUploadedImage(null);
+    setShowReport(false);
+  };
 
   const simulateProgress = () => {
     let progressValue = 0;
@@ -151,15 +188,31 @@ const ColorAnalysis = () => {
     return analysis;
   };
 
+  const getRandomSeason = (): string => {
+    const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
+    return seasons[Math.floor(Math.random() * seasons.length)];
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      {results ? (
+      {loading ? (
+        <div className="text-center">Loading...</div>
+      ) : showReport && results ? (
         <>
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Your Color Analysis</h1>
-            <div className="inline-flex items-center bg-rose-50 text-rose-700 px-4 py-2 rounded-lg">
-              <AlertCircle className="h-5 w-5 mr-2" />
-              Color analysis complete
+            <div className="inline-flex items-center justify-center space-x-4">
+              <div className="inline-flex items-center bg-rose-50 text-rose-700 px-4 py-2 rounded-lg">
+                <AlertCircle className="h-5 w-5 mr-2" />
+                Color analysis complete
+              </div>
+              <button
+                onClick={handleRedoAnalysis}
+                className="inline-flex items-center border-2 border-rose-700 hover:bg-rose-700 
+                  text-rose-700 hover:text-white px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                Redo Analysis
+              </button>
             </div>
           </div>
           <ColorReport {...results} />
