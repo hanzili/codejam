@@ -125,7 +125,7 @@ export const outfitItems = {
           ]
         },
         
-        fall: {
+        autumn: {
           top:[
             { 
               type: "Top",
@@ -232,7 +232,7 @@ export const outfitItems = {
           }
         ]
       },
-      fall: {
+      autumn: {
         top:[
           { 
             type: "Vest",
@@ -341,7 +341,7 @@ export const outfitItems = {
           }
         ]
       },
-      fall: {
+      autumn: {
         top:[
           { 
             type: "T-Shirt",
@@ -448,7 +448,7 @@ export const outfitItems = {
         }
       ]
     },
-    fall: {
+    autumn: {
       top:[
         { 
           type: "Top",
@@ -556,7 +556,7 @@ export const outfitItems = {
         ]
       },
       // party modern
-      fall: {
+      autumn: {
         top:[
           { 
             type: "Top",
@@ -662,7 +662,7 @@ export const outfitItems = {
           }
         ]
       },
-      fall: {
+      autumn: {
         top:[
           { 
             type: "Top",
