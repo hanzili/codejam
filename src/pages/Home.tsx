@@ -94,19 +94,19 @@ const Home = () => {
       >
         <div className="text-center max-w-4xl mx-auto">
           <motion.div variants={fadeInUp} className="mb-6">
-            <div className="inline-flex gap-2 p-1 bg-gray-50 rounded-lg">
+            <div className="inline-flex flex-wrap justify-center gap-2 p-1 bg-gray-50 rounded-lg">
               {seasonButtons.map(({ id, label, icon }) => (
                 <button
                   key={id}
                   onClick={() => setCurrentSeason(id)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                    currentSeason === id
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-300 flex items-center gap-1.5 min-w-[100px] justify-center
+                    ${currentSeason === id
                       ? `bg-gradient-to-r ${seasonColors[id as keyof typeof seasonColors]} text-white shadow-sm`
                       : 'hover:bg-white hover:shadow-sm text-gray-600'
-                  }`}
+                    }`}
                 >
                   <span className="text-base">{icon}</span>
-                  {label}
+                  <span className="hidden xs:inline">{label}</span>
                 </button>
               ))}
             </div>
@@ -114,7 +114,7 @@ const Home = () => {
 
           <motion.h1 
             variants={fadeInUp}
-            className="text-5xl md:text-7xl font-bold text-gray-900 mb-8"
+            className="text-4xl sm:text-5xl md:text-7xl font-bold text-gray-900 mb-8"
           >
             Your Personal{' '}
             <span className={`bg-gradient-to-r ${seasonColors[currentSeason as keyof typeof seasonColors]} bg-clip-text text-transparent transition-colors duration-500`}>
@@ -124,7 +124,7 @@ const Home = () => {
           
           <motion.p 
             variants={fadeInUp}
-            className="text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed"
+            className="text-lg sm:text-xl md:text-2xl text-gray-600 mb-12 leading-relaxed"
           >
             Discover your seasonal color palette and get personalized outfit recommendations that enhance your natural beauty.
           </motion.p>
@@ -132,7 +132,7 @@ const Home = () => {
           <motion.div variants={fadeInUp}>
             <SignedOut>
               <SignUpButton mode="modal">
-                <button className="inline-block bg-rose-500 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <button className="inline-block bg-rose-500 text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                   Start Your Color Journey
                 </button>
               </SignUpButton>
@@ -140,7 +140,7 @@ const Home = () => {
             <SignedIn>
               <Link
                 to="/color-analysis"
-                className="inline-block bg-rose-500 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                className="inline-block bg-rose-500 text-white px-6 py-3 rounded-full text-lg font-medium hover:bg-rose-600 transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
               >
                 Discover Your Colors
               </Link>
