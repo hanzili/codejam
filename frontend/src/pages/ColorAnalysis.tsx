@@ -4,6 +4,9 @@ import ColorReport from '../components/ColorReport';
 import ImageUploader from '../components/ImageUploader';
 import AnalysisProgress from '../components/AnalysisProgress';
 import { analyzeImageColors } from '../utils/colorAnalysis';
+import OpenAI from "openai";
+
+const key = import.meta.env.OPENAI_KEY;
 
 // Mock data for seasonal colors
 const seasonalColors = {
@@ -113,10 +116,58 @@ const ColorAnalysis = () => {
     setProgress(0);
     setCurrentStep('');
 
-    await analyzeImage(imageUrl);
-    await generateSeasonalAnalysis(imageUrl);
+    analyzeImage(imageUrl);
+    //await generateSeasonalAnalysis(imageUrl);
+
+    const base64Image =await convertToBase64(file);
+    await sendImageToGPT(base64Image);
+
     setIsAnalyzing(false);
   }, [results]);
+
+  const convertToBase64 = (file: File) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        // Extract the Base64 part from the result (after "data:image/jpeg;base64,")
+        const base64 = reader.result?.toString().split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const sendImageToGPT = async (base64Image: string) => {
+ 
+    const prompt ="For each season [spring, summer, autumn, winter], determine how how likely the season to match the image's color season. Output only the season that has the highest matching."
+    const context = "You are a personal stylist. Based on features such as skin tone, eye color, and lip color conduct a seasonal color analysis"
+    const imgType = "image/jpeg"
+
+    try {
+      const openai = new OpenAI({apiKey:key, dangerouslyAllowBrowser: true });
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: 'system', content: context },
+          {
+            role: "user",
+            content: [
+              { type: 'text', text: prompt },
+              { type: 'image_url', 
+                image_url: { url: `data:${imgType};base64,${base64Image}` } },
+            ],
+          },
+        ],
+      });
+      console.log(response);
+    
+
+    } catch (error) {
+      console.error('Error sending image to API:', error);
+    }
+  };
 
   const resetAnalysis = () => {
     localStorage.removeItem('colorAnalysis');
