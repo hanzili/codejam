@@ -6,7 +6,7 @@ import AnalysisProgress from '../components/AnalysisProgress';
 import { analyzeImageColors } from '../utils/colorAnalysis';
 import OpenAI from "openai";
 
-const key = import.meta.env.OPENAI_KEY;
+const key = import.meta.env.VITE_OPENAI_KEY;
 
 // Mock data for seasonal colors
 const seasonalColors = {
@@ -38,6 +38,8 @@ const ColorAnalysis = () => {
   const [currentStep, setCurrentStep] = useState('');
   const [results, setResults] = useState(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [season, setSeason] = useState('');
+  
 
   const analyzeImage = async (imageUrl: string): Promise<void> => {
     const steps = [
@@ -71,14 +73,14 @@ const ColorAnalysis = () => {
     setProgress(100);
   };
 
-  const generateSeasonalAnalysis = async (imageUrl: string) => {
+  const generateSeasonalAnalysis = async (imageUrl: string, season : string) => {
     const img = new Image();
     img.src = imageUrl;
     
+    console.log(season);
+
     img.onload = async () => {
-      try {
-        const season = await analyzeImageColors(img);
-        
+      try {        
         const analysis = {
           season,
           ...seasonalColors[season as keyof typeof seasonalColors],
@@ -107,6 +109,8 @@ const ColorAnalysis = () => {
     };
   };
 
+
+
   const handleImageUpload = useCallback(async (file: File) => {
     if (results) return;
     
@@ -117,10 +121,18 @@ const ColorAnalysis = () => {
     setCurrentStep('');
 
     analyzeImage(imageUrl);
-    //await generateSeasonalAnalysis(imageUrl);
-
+    
     const base64Image =await convertToBase64(file);
     await sendImageToGPT(base64Image);
+
+    //TODO : add here 
+    useEffect(() => {
+      if (season) {
+        console.log(`The season has been changed to: ${season}`);
+        generateSeasonalAnalysis(imageUrl, season);
+      }
+    }, [season]); // This makes sure it runs only when 'season' changes.
+
 
     setIsAnalyzing(false);
   }, [results]);
@@ -161,13 +173,43 @@ const ColorAnalysis = () => {
           },
         ],
       });
-      console.log(response);
-    
+      const content = response.choices[0].message.content;
 
+      await checkSeasons(content)
+    
     } catch (error) {
       console.error('Error sending image to API:', error);
     }
   };
+
+  const checkSeasons = async (inputString: string):  Promise<string> =>  {
+      const springRegex = /spring/i;  
+      const summerRegex = /summer/i;  
+      const winterRegex = /winter/i;  
+      const autumnRegex = /(fall|autumn)/i; 
+    
+      let seasonFound: number[] = [0,0,0,0];
+      let seasonNames: string[] = ["spring", "summer",  "autumn", "winter"]
+
+      if (springRegex.test(inputString)) {seasonFound[0]= 1;}
+      if (summerRegex.test(inputString)) {seasonFound[1]= 1;}
+      if (autumnRegex.test(inputString)) {seasonFound[2]= 1;}
+      if (winterRegex.test(inputString)) {seasonFound[3]= 1;}
+
+      const numSeason = seasonFound.reduce((acc, curr) => acc + curr, 0);
+      if (numSeason == 1 ){
+        seasonFound.forEach((value, index) => {
+          if (value == 1) {
+            setSeason(seasonNames[index]); 
+          }
+        });
+      }
+      else {
+        const randomNumber = Math.floor(Math.random() * 4);  
+        setSeason(seasonNames[randomNumber]);  
+      }
+    
+    };
 
   const resetAnalysis = () => {
     localStorage.removeItem('colorAnalysis');
