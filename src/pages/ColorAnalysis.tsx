@@ -10,7 +10,23 @@ import { updateUserSeason } from '../lib/supabase';
 const key = import.meta.env.VITE_OPENAI_KEY;
 const useOpenAI = import.meta.env.VITE_USE_OPENAI === 'true';
 
-// Seasonal colors data
+interface ColorAnalysisResult {
+  season: string;
+  undertone: string;
+  characteristics: {
+    skinTone: string;
+    eyeColor: string;
+    hairColor: string;
+    contrastLevel: string;
+  };
+  personalizedDescription: string;
+  customRecommendations: {
+    bestColors: string[];
+    worstColors: string[];
+    specificTips: string[];
+  };
+}
+
 const seasonalColors = {
   Spring: {
     colors: ["#FF9AA2", "#FFB7B2", "#FFDAC1", "#E2F0CB", "#B5EAD7", "#C7CEEA"],
@@ -45,16 +61,11 @@ const ColorAnalysis = () => {
   const [currentStep, setCurrentStep] = useState('');
   const [results, setResults] = useState<any>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-
-  // State to manage whether to show the report or the uploader
   const [showReport, setShowReport] = useState(false);
 
-  // Check if user has a saved season when the component mounts or when the user changes
   useEffect(() => {
-    if (user && user.season && !results && !isAnalyzing) {
-      // Generate analysis based on user's saved season
-      const analysis = generateSeasonalAnalysis(user.season);
-      setResults(analysis);
+    if (user && user.report_data && !results && !isAnalyzing) {
+      setResults(user.report_data);
       setShowReport(true);
     }
   }, [user]);
@@ -67,23 +78,19 @@ const ColorAnalysis = () => {
       setProgress(0);
       setCurrentStep('Starting analysis...');
 
-      // Start progress simulation
       simulateProgress();
 
-      // Convert image to base64
       const base64Image = await convertToBase64(file);
 
-      // Determine season based on OpenAI flag
-      const season = useOpenAI ? await sendImageToOpenAI(base64Image) : getRandomSeason();
+      const analysis = useOpenAI 
+        ? await sendImageToOpenAI(base64Image) 
+        : getRandomAnalysis();
 
-      // Generate analysis results
-      const analysis = generateSeasonalAnalysis(season);
-      setResults(analysis);
+      const fullAnalysis = generateSeasonalAnalysis(analysis.season, analysis);
 
-      // Update user's season in Supabase if user is logged in
       if (user) {
         try {
-          await updateUserSeason(user.id, season);
+          await updateUserSeason(user.id, fullAnalysis.season, fullAnalysis);
         } catch (error) {
           console.error('Error updating user season:', error);
         }
@@ -92,13 +99,13 @@ const ColorAnalysis = () => {
       setIsAnalyzing(false);
       setProgress(100);
       setCurrentStep('Analysis complete');
+      setResults(fullAnalysis);
       setShowReport(true);
     },
     [user]
   );
 
   const handleRedoAnalysis = () => {
-    // Reset the state to allow the user to upload a new image
     setResults(null);
     setUploadedImage(null);
     setShowReport(false);
@@ -128,9 +135,32 @@ const ColorAnalysis = () => {
     });
   };
 
-  const sendImageToOpenAI = async (base64Image: string): Promise<string> => {
-    const prompt = "For each season [spring, summer, autumn, winter], determine how likely the season to match the image's color season. Output only the season that has the highest matching.";
-    const context = "You are a personal stylist. Based on features such as skin tone, eye color, and lip color conduct a seasonal color analysis.";
+  const sendImageToOpenAI = async (base64Image: string): Promise<ColorAnalysisResult> => {
+    const prompt = `Analyze this person's coloring for a seasonal color analysis. Consider skin tone, eye color, hair color, and overall contrast.
+
+Provide a detailed response in the following JSON format **without any code blocks or additional formatting**:
+{
+  "season": "Spring|Summer|Autumn|Winter",
+  "undertone": "Warm|Cool|Neutral",
+  "characteristics": {
+    "skinTone": "detailed description",
+    "eyeColor": "detailed description",
+    "hairColor": "detailed description",
+    "contrastLevel": "Low|Medium|High with explanation"
+  },
+  "personalizedDescription": "2-3 sentences about their unique coloring",
+  "customRecommendations": {
+    "bestColors": ["specific color 1", "specific color 2", "specific color 3"],
+    "worstColors": ["specific color 1", "specific color 2"],
+    "specificTips": ["personalized tip 1", "personalized tip 2"]
+  }
+}
+
+Focus on providing highly personalized insights based on the individual's unique features.
+
+**Please provide the response as plain JSON without any code blocks or formatting.**`;
+
+    const context = `You are an expert color analyst with years of experience in personal color analysis. Provide detailed, personalized color recommendations based on the individual's unique features. **Ensure the response is in plain JSON format without any code blocks or Markdown formatting.**`;
     const imgType = "image/jpeg";
 
     const openai = new OpenAI({ apiKey: key, dangerouslyAllowBrowser: true });
@@ -151,46 +181,71 @@ const ColorAnalysis = () => {
             ],
           },
         ],
+        max_tokens: 1000,
       });
 
-      const content = response.choices[0].message?.content;
-      console.log(content);
+      let content = response.choices[0].message?.content;
 
-      if (typeof content === 'string') {
-        return parseSeasonFromResponse(content);
+      if (content) {
+        // Remove any code block markers or whitespace
+        content = content.trim();
+
+        // Regex to remove code block markers and language hints
+        content = content.replace(/^```[\w]*\n/, '').replace(/```$/, '');
+
+        try {
+          return JSON.parse(content) as ColorAnalysisResult;
+        } catch (error) {
+          console.error('Error parsing OpenAI response:', error);
+          return getRandomAnalysis();
+        }
       }
-      
-      return 'Unknown';
+
+      return getRandomAnalysis();
     } catch (error) {
       console.error('Error sending image to OpenAI:', error);
-      return 'Unknown';
+      return getRandomAnalysis();
     }
   };
 
-  const parseSeasonFromResponse = (content: string): string => {
+  const getRandomAnalysis = (): ColorAnalysisResult => {
     const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
-    for (const season of seasons) {
-      if (content.toLowerCase().includes(season.toLowerCase())) {
-        return season;
+    const randomSeason = seasons[Math.floor(Math.random() * seasons.length)];
+    
+    return {
+      season: randomSeason,
+      undertone: randomSeason === 'Spring' || randomSeason === 'Autumn' ? 'Warm' : 'Cool',
+      characteristics: {
+        skinTone: "Medium with neutral undertones",
+        eyeColor: "Brown",
+        hairColor: "Dark brown",
+        contrastLevel: "Medium"
+      },
+      personalizedDescription: "Your natural coloring creates a harmonious blend of warm and cool tones.",
+      customRecommendations: {
+        bestColors: ["Navy blue", "Forest green", "Deep burgundy"],
+        worstColors: ["Neon yellow", "Hot pink"],
+        specificTips: [
+          "Focus on deep, rich colors that complement your natural contrast",
+          "Avoid overly bright or neon shades"
+        ]
       }
-    }
-    // Return a random season if none is detected
-    return seasons[Math.floor(Math.random() * seasons.length)];
+    };
   };
 
-  const generateSeasonalAnalysis = (season: string) => {
-    const analysis = {
+  const generateSeasonalAnalysis = (season: string, aiAnalysis?: ColorAnalysisResult) => {
+    const seasonData = seasonalColors[season as keyof typeof seasonalColors];
+    
+    return {
       season,
-      ...(seasonalColors[season as keyof typeof seasonalColors] || {}),
+      undertone: aiAnalysis?.undertone || seasonData.undertone,
+      colors: seasonData.colors,
+      description: aiAnalysis?.personalizedDescription || seasonData.description,
+      characteristics: aiAnalysis?.characteristics,
+      customRecommendations: aiAnalysis?.customRecommendations,
       date: new Date().toISOString(),
       userImage: uploadedImage,
     };
-    return analysis;
-  };
-
-  const getRandomSeason = (): string => {
-    const seasons = ['Spring', 'Summer', 'Autumn', 'Winter'];
-    return seasons[Math.floor(Math.random() * seasons.length)];
   };
 
   return (

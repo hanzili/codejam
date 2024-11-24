@@ -19,6 +19,7 @@ export interface User {
   id: string;
   clerk_id: string;
   season: string;
+  report_data: any;
   created_at: string;
   updated_at: string;
 }
@@ -55,10 +56,10 @@ export async function createUser(clerkId: string, season: string): Promise<User 
   }
 }
 
-export async function updateUserSeason(userId: string, season: string) {
+export async function updateUserSeason(userId: string, season: string, reportData: any) {
   const { error } = await supabase
     .from('users')
-    .update({ season })
+    .update({ season, report_data: reportData })
     .eq('id', userId);
 
   if (error) {
@@ -69,7 +70,7 @@ export async function updateUserSeason(userId: string, season: string) {
 export async function getUserByClerkId(clerkId: string): Promise<User | null> {
   const { data, error } = await supabase
     .from('users')
-    .select()
+    .select('*')
     .eq('clerk_id', clerkId)
     .single();
 

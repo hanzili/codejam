@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingBag, Heart, Share2, Palette, ExternalLink, Tag, Info } from 'lucide-react';
+import { Share2, Palette, ExternalLink, Tag, Info } from 'lucide-react';
 
 interface OutfitItem {
   type: string;
@@ -29,6 +29,33 @@ const OutfitSet: React.FC<OutfitSetProps> = ({
   season,
   style 
 }) => {
+  const handleShare = async () => {
+    const shareText = `Check out this ${season ? `${season} ` : ''}${style} outfit for ${occasion}!\n\nItems:\n${
+      items.map(item => `- ${item.name} by ${item.brand} ($${item.price})`).join('\n')
+    }\n\nTotal: $${totalPrice.toFixed(2)}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'SeasonOfYou Outfit',
+          text: shareText,
+          url: window.location.href
+        });
+      } catch (error) {
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Error sharing:', error);
+        }
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(shareText);
+        alert('Outfit details copied to clipboard!');
+      } catch (error) {
+        console.error('Error copying to clipboard:', error);
+      }
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="p-6">
@@ -100,18 +127,14 @@ const OutfitSet: React.FC<OutfitSetProps> = ({
           ))}
         </div>
 
-        <div className="mt-6 flex justify-between items-center">
-          <div className="flex space-x-2">
-            <button className="p-2 text-gray-600 hover:text-rose-500 transition-colors">
-              <Heart className="h-5 w-5" />
-            </button>
-            <button className="p-2 text-gray-600 hover:text-rose-500 transition-colors">
-              <Share2 className="h-5 w-5" />
-            </button>
-          </div>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-rose-500 text-white rounded-md hover:bg-rose-600 transition-colors">
-            <ShoppingBag className="h-5 w-5" />
-            <span>Shop All Items</span>
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleShare}
+            className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-rose-500 transition-colors"
+            aria-label="Share outfit"
+          >
+            <Share2 className="h-5 w-5" />
+            <span>Share Outfit</span>
           </button>
         </div>
       </div>

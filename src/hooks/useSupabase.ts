@@ -1,42 +1,51 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/clerk-react';
-import { User, getUserByClerkId, createUser } from '../lib/supabase';
+import { supabase, User, createUser } from '../lib/supabase';
 
-export function useSupabaseUser() {
-  const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
+export const useSupabaseUser = () => {
+  const { user: clerkUser } = useUser();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadUser() {
+    const fetchUser = async () => {
+      setLoading(true);
+
       if (!clerkUser) {
-        setUser(null);
+        console.error('No authenticated user found.');
         setLoading(false);
         return;
       }
 
-      try {
-        let dbUser = await getUserByClerkId(clerkUser.id);
-        
-        // If user doesn't exist in Supabase but exists in Clerk, create them
-        if (!dbUser) {
-          // You might want to get this from your Clerk user metadata or another source
-          const defaultSeason = '';
-          dbUser = await createUser(clerkUser.id, defaultSeason);
+      // Try to fetch the user from Supabase
+      let { data: supabaseUser, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('clerk_id', clerkUser.id)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116' || error.code === 'PGRST114') {
+          // User does not exist; create a new user
+          const defaultSeason = ''; // Default value for season
+          const newUser = await createUser(clerkUser.id, defaultSeason);
+          if (newUser) {
+            setUser(newUser);
+          } else {
+            console.error('Failed to create new user in Supabase.');
+          }
+        } else {
+          console.error('Error fetching user:', error);
         }
-
-        setUser(dbUser);
-      } catch (error) {
-        console.error('Error loading user:', error);
-      } finally {
-        setLoading(false);
+      } else {
+        setUser(supabaseUser);
       }
-    }
 
-    if (clerkLoaded) {
-      loadUser();
-    }
-  }, [clerkUser, clerkLoaded]);
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, [clerkUser]);
 
   return { user, loading };
-}
+};
