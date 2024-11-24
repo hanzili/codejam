@@ -71,29 +71,30 @@ export const outfitItems = {
             }
           ]
         },
+        //formal modern
         spring: {
           top:[
             { 
-              type: "Pants",
-              name: "Slim Fit Suit Pants",
-              brand: "H&M",
-              price: 34.99,
-              image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-              color: "Navy",
-              description: "this is a description",
-              link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+              type: "Turtleneck",
+              name: "Heat Tech Fleece Turtleneck T-Shirt",
+              brand: "UNIQLO",
+              price: 29.90,
+              image: "https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/442063/item/cagoods_11_442063_3x4.jpg?width=369",
+              color: "Pink",
+              description: "Heat Tech fleece fabric. The soft and comfortable feel of fleece. Turtleneck design for extra warmth.",
+              link: "https://www.uniqlo.com/ca/en/products/E442063-000?colorCode=COL11&sizeCode=SMA002"
             }
           ],
           bottom:[
             { 
               type: "Pants",
-              name: "Slim Fit Suit Pants",
-              brand: "H&M",
-              price: 34.99,
-              image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-              color: "Navy",
-              description: "this is a description",
-              link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+              name: "Wide Chino Pants",
+              brand: "UNIQLO",
+              price: 59.90,
+              image: "https://image.uniqlo.com/UQ/ST3/ca/imagesgoods/469828/item/cagoods_32_469828_3x4.jpg?width=369",
+              color: "Beige",
+              description: "Smart looking pants with minimal detailing. Stretch at the waist for comfort and a flattering fit.",
+              link: "https://www.uniqlo.com/ca/en/products/E469828-000?colorCode=COL32&sizeCode=SMA002"
             }
           ]
         },
@@ -125,7 +126,7 @@ export const outfitItems = {
           ]
         },
         
-        autumn: {
+        fall: {
           top:[
             { 
               type: "Top",
@@ -179,29 +180,30 @@ export const outfitItems = {
           }
         ]
       },
+      //formal creative
       spring: {
         top:[
           { 
-            type: "Pants",
-            name: "Slim Fit Suit Pants",
+            type: "Cardigan",
+            name: "Mohair-blend cardigan",
             brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            price: 178.90,
+            image: "https://image.hm.com/assets/hm/2c/60/2c60cb3d256a3816050ed08d33230e4fcd69e53f.jpg?imwidth=1536",
+            color: "Dusty Blue",
+            description: "Oversized cardigan in a soft knit containing mohair and wool. V-neckline, buttons down the front and dropped shoulders. Ribbing at the cuffs and hem.",
+            link: "https://www2.hm.com/en_ca/productpage.1260301004.html"
           }
         ],
         bottom:[
           { 
             type: "Pants",
-            name: "Slim Fit Suit Pants",
+            name: "Flared Crinkle Pants",
             brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            price: 29.90,
+            image: "https://image.hm.com/assets/hm/93/7e/937efca0d4b40be2cd0382097615c9a37c8e05d8.jpg?imwidth=1536",
+            color: "Brown",
+            description: "Fitted pants in crinkled jersey. Concealed, elasticized waistband and flared hems.",
+            link: "https://www2.hm.com/en_ca/productpage.1274428001.html"
           }
         ]
       },
@@ -232,7 +234,7 @@ export const outfitItems = {
           }
         ]
       },
-      autumn: {
+      fall: {
         top:[
           { 
             type: "Vest",
@@ -288,29 +290,30 @@ export const outfitItems = {
           }
         ]
       },
+      //casual modern
       spring: {
         top:[
           { 
-            type: "Pants",
-            name: "Slim Fit Suit Pants",
+            type: "Jacket",
+            name: "Hooded Jacket",
             brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            price: 24.99,
+            image: "https://image.hm.com/assets/hm/96/b3/96b346d9709a9b1f712a9169d069c6e654d983bf.jpg?imwidth=1536",
+            color: "Dark Brown",
+            description: "Hooded sweatshirt jacket with a soft, brushed inside. Jersey-lined, drawstring hood, zipper at front, and kangaroo pockets. Dropped shoulders, long sleeves, and ribbing at cuffs and hem.",
+            link: "https://www2.hm.com/en_ca/productpage.1213772006.html"
           }
         ],
         bottom:[
           { 
             type: "Pants",
-            name: "Slim Fit Suit Pants",
+            name: "Wide Legged Joggers",
             brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            price: 24.99,
+            image: "https://image.hm.com/assets/hm/9b/f3/9bf37f9be5c297c9d9106f46e19631a03da03723.jpg?imwidth=1536",
+            color: "Light Yellow",
+            description: "Loose-fit sweatpant joggers. Elasticized, drawstring waistband, discreet side-seam pockets, and wide legs.",
+            link: "https://www2.hm.com/en_ca/productpage.1199249019.html"
           }
         ]
       },
@@ -341,7 +344,7 @@ export const outfitItems = {
           }
         ]
       },
-      autumn: {
+      fall: {
         top:[
           { 
             type: "T-Shirt",
@@ -395,29 +398,30 @@ export const outfitItems = {
         }
       ]
     },
+    //casual creative
     spring: {
       top:[
         { 
-          type: "Pants",
-          name: "Slim Fit Suit Pants",
+          type: "Blouse",
+          name: "Sheer Tie-Neck Blouse",
           brand: "H&M",
-          price: 34.99,
-          image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-          color: "Navy",
-          description: "this is a description",
-          link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+          price: 79.99,
+          image: "https://image.hm.com/assets/hm/c7/3e/c73e5c309e63a45fae6bfe1dce2c66f3396348d3.jpg?imwidth=1536",
+          color: "Cream",
+          description: "Loose-fit blouse in sheer, woven fabric. Gathered stand collar with wide ties at front, long, wide raglan sleeves, and curved, flounce-trimmed cuffs.",
+          link: "https://www2.hm.com/en_ca/productpage.1259011001.html"
         }
       ],
       bottom:[
         { 
           type: "Pants",
-          name: "Slim Fit Suit Pants",
+          name: "Flared Crushed-Velour Leggings",
           brand: "H&M",
-          price: 34.99,
-          image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-          color: "Navy",
-          description: "this is a description",
-          link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+          price: 24.99,
+          image: "https://image.hm.com/assets/hm/4e/7c/4e7c804daa983288719b1ee6f4086c42ea8a5893.jpg?imwidth=1536",
+          color: "Orange",
+          description: "Leggings in crushed velour. Concealed elasticized waistband and flared hems.",
+          link: "https://www2.hm.com/en_ca/productpage.1276341002.html"
         }
       ]
     },
@@ -448,7 +452,7 @@ export const outfitItems = {
         }
       ]
     },
-    autumn: {
+    fall: {
       top:[
         { 
           type: "Top",
@@ -503,29 +507,30 @@ export const outfitItems = {
           }
         ]
       },
+      // party modern
       spring: {
         top:[
           { 
-            type: "Pants",
-            name: "Slim Fit Suit Pants",
-            brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
+            type: "Dress",
+            name: "Velvet Midi Dress ZW Collection",
+            brand: "ZARA",
+            price: 79.99,
+            image: "https://static.zara.net/assets/public/a705/f023/c1ee46a99ed0/a2f6ae68cc4c/09998185401-p/09998185401-p.jpg?ts=1731590343295&w=1024",
             color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            description: "Midi dress made of velvet effect fabric. Drop sleeve with fluid neckline.",
+            link: "https://www.zara.com/ca/en/velvet-midi-dress-zw-collection-p09998185.html?v1=411120428&v2=2420795"
           }
         ],
         bottom:[
           { 
             type: "Pants",
-            name: "Slim Fit Suit Pants",
-            brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            name: "STRAIGHT FIT CREPE PANTS",
+            brand: "ZARA",
+            price: 65.99,
+            image: "https://static.zara.net/assets/public/f282/55b0/3cf44fc688b6/387d0572d1db/02008572501-e1/02008572501-e1.jpg?ts=1731596109166&w=1024",
+            color: "Green",
+            description: "Pants with a high waist and back elastic waistband and front pockets. Straight leg. Front zip, interior button and hook closure.",
+            link: "https://www.zara.com/ca/en/straight-fit-crepe-pants-p02008572.html?v1=414932802&v2=2420795"
           }
         ]
       },
@@ -556,7 +561,7 @@ export const outfitItems = {
         ]
       },
       // party modern
-      autumn: {
+      fall: {
         top:[
           { 
             type: "Top",
@@ -610,29 +615,30 @@ export const outfitItems = {
           }
         ]
       },
+      // party creative
       spring: {
         top:[
           { 
-            type: "Pants",
-            name: "Slim Fit Suit Pants",
-            brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            type: "Blouse",
+            name: "Tied Blouse ZW Collection",
+            brand: "ZARA",
+            price: 65.99,
+            image: "https://static.zara.net/assets/public/8bb3/03b0/409846a1bd4c/7b2b3f4b50c4/08876019600-e1/08876019600-e1.jpg?ts=1732098472895&w=1024",
+            color: "Red",
+            description: "Blouse with round collar and V-neck front with self tie. Long flared sleeves. Straight hem.",
+            link: "https://www.zara.com/ca/en/tied-blouse-zw-collection-p08876019.html?v1=407604330&v2=2420959"
           }
         ],
         bottom:[
           { 
-            type: "Pants",
-            name: "Slim Fit Suit Pants",
-            brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            type: "Skirt",
+            name: "Velvet Pencil Skirt ZW Collection",
+            brand: "ZARA",
+            price: 99.99,
+            image: "https://static.zara.net/assets/public/397e/a535/aab048c192e2/a667c842a7b7/04043118800-e1/04043118800-e1.jpg?ts=1731676653774&w=1024",
+            color: "Black",
+            description: "Midi pencil skirt made of velvet. Slit hem. Front embossed metal button closure.",
+            link: "https://www.zara.com/ca/en/velvet-pencil-skirt-zw-collection-p04043118.html?v1=410564524&v2=2420959"
           }
         ]
       },
@@ -662,7 +668,7 @@ export const outfitItems = {
           }
         ]
       },
-      autumn: {
+      fall: {
         top:[
           { 
             type: "Top",
