@@ -1,5 +1,4 @@
-import React from 'react';
-import { SignedIn, SignedOut, SignUpButton } from '@clerk/clerk-react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
@@ -15,6 +14,14 @@ import {
   Shirt,
   Sun
 } from 'lucide-react';
+import { SignedIn, SignedOut, SignUpButton } from '@clerk/clerk-react';
+
+const seasonColors = {
+  spring: 'from-pink-500 to-yellow-500',
+  summer: 'from-blue-400 to-purple-500',
+  autumn: 'from-orange-500 to-amber-600',
+  winter: 'from-blue-600 to-indigo-800'
+};
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -35,10 +42,18 @@ const scaleIn = {
 };
 
 const Home = () => {
+  const [currentSeason, setCurrentSeason] = useState('spring');
   const [heroRef, heroInView] = useInView({ triggerOnce: true });
   const [stepsRef, stepsInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [benefitsRef, benefitsInView] = useInView({ triggerOnce: true, threshold: 0.2 });
   const [galleryRef, galleryInView] = useInView({ triggerOnce: true, threshold: 0.2 });
+
+  const seasonButtons = [
+    { id: 'spring', label: 'Spring', icon: '🌸' },
+    { id: 'summer', label: 'Summer', icon: '☀️' },
+    { id: 'autumn', label: 'Autumn', icon: '🍂' },
+    { id: 'winter', label: 'Winter', icon: '❄️' }
+  ];
 
   const journeySteps = [
     {
@@ -78,12 +93,33 @@ const Home = () => {
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28"
       >
         <div className="text-center max-w-4xl mx-auto">
+          <motion.div variants={fadeInUp} className="mb-6">
+            <div className="inline-flex gap-2 p-1 bg-gray-50 rounded-lg">
+              {seasonButtons.map(({ id, label, icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setCurrentSeason(id)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                    currentSeason === id
+                      ? `bg-gradient-to-r ${seasonColors[id as keyof typeof seasonColors]} text-white shadow-sm`
+                      : 'hover:bg-white hover:shadow-sm text-gray-600'
+                  }`}
+                >
+                  <span className="text-base">{icon}</span>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
           <motion.h1 
             variants={fadeInUp}
             className="text-5xl md:text-7xl font-bold text-gray-900 mb-8"
           >
-            Your Personal
-            <span className="bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent"> Color Guide</span>
+            Your Personal{' '}
+            <span className={`bg-gradient-to-r ${seasonColors[currentSeason as keyof typeof seasonColors]} bg-clip-text text-transparent transition-colors duration-500`}>
+              Color Guide
+            </span>
           </motion.h1>
           
           <motion.p 

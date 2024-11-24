@@ -3,8 +3,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Sparkles, Menu, X } from 'lucide-react';
 import { SignedIn, SignedOut, UserButton, SignInButton } from '@clerk/clerk-react';
 
-const devAuthBypass = import.meta.env.VITE_DEV_AUTH_BYPASS;
-
 const Navbar = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -53,7 +51,7 @@ const Navbar = () => {
       >
         History
       </Link>
-      {!devAuthBypass && <UserButton afterSignOutUrl="/" />}
+      <UserButton afterSignOutUrl="/" />
     </>
   );
 
@@ -76,22 +74,16 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            {devAuthBypass ? (
+            <SignedIn>
               <AuthenticatedLinks />
-            ) : (
-              <>
-                <SignedIn>
-                  <AuthenticatedLinks />
-                </SignedIn>
-                <SignedOut>
-                  <SignInButton mode="modal">
-                    <button className="bg-rose-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-rose-600 transition-colors">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                </SignedOut>
-              </>
-            )}
+            </SignedIn>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="bg-rose-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-rose-600 transition-colors">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
           </div>
 
           {/* Mobile menu button */}
@@ -115,22 +107,16 @@ const Navbar = () => {
       {/* Mobile menu */}
       <div className={`md:hidden ${isMenuOpen ? 'block' : 'hidden'}`}>
         <div className="px-2 pt-2 pb-3 space-y-1 bg-white shadow-lg">
-          {devAuthBypass ? (
+          <SignedIn>
             <AuthenticatedLinks isMobile />
-          ) : (
-            <>
-              <SignedIn>
-                <AuthenticatedLinks isMobile />
-              </SignedIn>
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <button className="w-full text-left px-3 py-2 text-base font-medium text-rose-500 hover:bg-rose-50 rounded-md transition-colors">
-                    Sign In
-                  </button>
-                </SignInButton>
-              </SignedOut>
-            </>
-          )}
+          </SignedIn>
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="w-full text-left px-3 py-2 text-base font-medium text-rose-500 hover:bg-rose-50 rounded-md transition-colors">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
         </div>
       </div>
     </nav>

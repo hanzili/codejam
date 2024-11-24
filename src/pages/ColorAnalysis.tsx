@@ -249,7 +249,7 @@ Focus on providing highly personalized insights based on the individual's unique
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12">
+    <div className="max-w-7xl mx-auto px-4 py-12">
       {loading ? (
         <div className="text-center">Loading...</div>
       ) : showReport && results ? (
@@ -278,16 +278,18 @@ Focus on providing highly personalized insights based on the individual's unique
             <h1 className="text-3xl font-bold text-gray-900 mb-4">Color Analysis</h1>
             <p className="text-gray-600">Upload a selfie to discover your seasonal color palette</p>
           </div>
-          <div className="bg-white p-8 rounded-xl shadow-lg">
-            {isAnalyzing ? (
-              <AnalysisProgress
-                progress={progress}
-                currentStep={currentStep}
-                uploadedImage={uploadedImage}
-              />
-            ) : (
-              <ImageUploader onImageUpload={handleImageUpload} disabled={isAnalyzing} />
-            )}
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white p-8 rounded-xl shadow-lg">
+              {isAnalyzing ? (
+                <AnalysisProgress
+                  progress={progress}
+                  currentStep={currentStep}
+                  uploadedImage={uploadedImage}
+                />
+              ) : (
+                <ImageUploader onImageUpload={handleImageUpload} disabled={isAnalyzing} />
+              )}
+            </div>
           </div>
         </>
       )}
