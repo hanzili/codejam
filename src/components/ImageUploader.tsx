@@ -15,10 +15,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, disabled }
       }
     },
     accept: {
-      'image/*': ['.jpeg', '.jpg', '.png']
+      'image/*': ['.jpeg', '.jpg', '.png'],
     },
     maxFiles: 1,
-    disabled
+    disabled,
   });
 
   return (
@@ -38,14 +38,12 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, disabled }
             <p className="text-lg font-medium text-gray-900">Drop your photo here</p>
             <p className="text-sm text-gray-500">or click to select a file</p>
           </div>
-          <p className="text-xs text-gray-400">
-            Supported formats: JPEG, PNG
-          </p>
+          <p className="text-xs text-gray-400">Supported formats: JPEG, PNG</p>
         </div>
       </div>
 
       <div className="mt-8">
-        <button 
+        <button
           onClick={() => {}}
           disabled={disabled}
           className={`w-full flex items-center justify-center space-x-2 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-500 hover:bg-rose-600
