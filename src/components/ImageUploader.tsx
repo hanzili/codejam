@@ -41,18 +41,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload, disabled }
           <p className="text-xs text-gray-400">Supported formats: JPEG, PNG</p>
         </div>
       </div>
-
-      <div className="mt-8">
-        <button
-          onClick={() => {}}
-          disabled={disabled}
-          className={`w-full flex items-center justify-center space-x-2 py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-rose-500 hover:bg-rose-600
-            ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          <Camera className="h-5 w-5" />
-          <span>Take a Photo</span>
-        </button>
-      </div>
     </>
   );
 };
