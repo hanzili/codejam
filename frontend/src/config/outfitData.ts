@@ -318,7 +318,7 @@ export const outfitItems = {
       summer:{
         top:[
           { 
-            type: "Pants",
+            type: "Top",
             name: "Oversize Printed T-Shirt",
             brand: "H&M",
             price: 24.99,
@@ -331,13 +331,13 @@ export const outfitItems = {
         bottom:[
           { 
             type: "Pants",
-            name: "Slim Fit Suit Pants",
+            name: "Straight Regular Jeans",
             brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            price: 59.99,
+            image: "https://image.hm.com/assets/hm/bc/22/bc22b7bbcf74913c8a10d944614fa36bac0c4d90.jpg?imwidth=1536",
+            color: "Blue",
+            description: "5-pocket jeans in rigid cotton denim that feels firm at first, softening and relaxing with wear. Loose fit from waist to hip and straight cut from thigh to hem. Regular waist and button fly. Straight, longer legs, designed to fall over foot with a stacking effect. Denim that goes from daytime to date night.",
+            link: "https://www2.hm.com/en_ca/productpage.1222679005.html"
           }
         ]
       },
@@ -421,29 +421,30 @@ export const outfitItems = {
         }
       ]
     },
+    //creative casual
     summer:{
       top:[
         { 
-          type: "Pants",
-          name: "Slim Fit Suit Pants",
-          brand: "H&M",
-          price: 34.99,
-          image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-          color: "Navy",
-          description: "this is a description",
-          link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+          type: "Blouse",
+          name: "Floral Print Satin Effect Blouse",
+          brand: "ZARA",
+          price: 55.99,
+          image: "https://static.zara.net/assets/public/6751/0969/58a14a85a205/0e1988f08022/09217281668-p/09217281668-p.jpg?ts=1731687043588&w=1024",
+          color: "Light Burgundy",
+          description: "Flowy blouse with lapel collar and long sleeves. Front hidden button closure.",
+          link: "https://www.zara.com/ca/en/floral-print-satin-effect-blouse-p09217281.html?v1=408710202&v2=2419930"
         }
       ],
       bottom:[
         { 
           type: "Pants",
-          name: "Slim Fit Suit Pants",
-          brand: "H&M",
-          price: 34.99,
-          image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-          color: "Navy",
-          description: "this is a description",
-          link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+          name: "Wide Leg Belted Pants",
+          brand: "ZARA",
+          price: 65.99,
+          image: "https://static.zara.net/assets/public/1dda/15cf/794b4ab0b6c2/1ad136239690/07968051406-e1/07968051406-e1.jpg?ts=1727010171384&w=1024",
+          color: "Light Blue",
+          description: "Pants with a high waist with front pleats and self belt. Front pockets and back patch pockets. Wide leg. Front zip, inner button, and metal hook closure.",
+          link: "https://www.zara.com/ca/en/wide-leg-belted-pants-p07968051.html?v1=367323101&v2=2420795"
         }
       ]
     },
@@ -531,26 +532,26 @@ export const outfitItems = {
       summer:{
         top:[
           { 
-            type: "Pants",
-            name: "Slim Fit Suit Pants",
-            brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            type: "Top",
+            name: "Metallic Thread Top with Raised Flowers",
+            brand: "ZARA",
+            price: 45.90,
+            image: "https://static.zara.net/assets/public/3521/8cc7/453e4fe49697/8bbd4ef8b87c/03152150629-p/03152150629-p.jpg?ts=1724854575330&w=1024",
+            color: "Light Purple",
+            description: "Top made with metallic thread knit fabric. Strapless with straight neckline. Matching interior lining. Self floral appliqués.",
+            link: "https://www.zara.com/ca/en/metallic-thread-top-with-raised-flowers-p03152150.html?v1=387299624&v2=2419906"
           }
         ],
         bottom:[
           { 
             type: "Pants",
-            name: "Slim Fit Suit Pants",
+            name: "WRINKLED EFFECT SHINY PANTS",
             brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            price: 65.99,
+            image: "https://static.zara.net/assets/public/4449/7b5b/aa214d26b00f/9e9466d5b20b/08985543808-p/08985543808-p.jpg?ts=1727274221896&w=1024",
+            color: "Gray",
+            description: "Wrinkle effect and shiny fabric pants. High-waisted with front pockets and false back welt pockets. Straight leg. Front zip, interior button and hook closure.",
+            link: "https://www.zara.com/ca/en/wrinkled-effect-shiny-pants-p08985543.html?v1=392190085&v2=2420795"
           }
         ]
       },
@@ -638,26 +639,26 @@ export const outfitItems = {
       summer:{
         top:[
           { 
-            type: "Pants",
-            name: "Slim Fit Suit Pants",
+            type: "Top",
+            name: "Turtleneck Top",
             brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            price: 14.99,
+            image: "https://image.hm.com/assets/hm/a8/71/a871fac825526dda38e0fac27334936c9f4583f2.jpg?imwidth=1536",
+            color: "Cheeta Print",
+            description: "Fitted turtleneck top in soft jersey with long sleeves.",
+            link: "https://www2.hm.com/en_ca/productpage.1089794026.html"
           }
         ],
         bottom:[
           { 
             type: "Pants",
-            name: "Slim Fit Suit Pants",
-            brand: "H&M",
-            price: 34.99,
-            image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1",
-            color: "Navy",
-            description: "this is a description",
-            link: "https://www2.hm.com/en_us/productpage.0713739044.html"
+            name: "Velvet Sequin Pants",
+            brand: "ZARA",
+            price: 65.90,
+            image: "https://static.zara.net/assets/public/71e3/b22c/fc4c48c2a714/4f368bfc6852/09720645055-p/09720645055-p.jpg?ts=1730292161989&w=1024",
+            color: "Light Blue",
+            description: "Velvet pants with sequins. Straight leg pants with a high waist and side slits. Hidden zip closure at side",
+            link: "https://www.zara.com/ca/en/velvet-sequin-pants-p09720645.html?v1=406252087&v2=2420795"
           }
         ]
       },
